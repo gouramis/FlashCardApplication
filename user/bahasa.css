@@ -1,0 +1,164 @@
+body {
+    font-family: helvetica, 'Raleway','Open sans', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+main {
+  min-height: 100vh;
+}
+div.textCard {
+    background-color: #ffffff;
+    border-style: solid;
+    border-width: 4px;
+    border-color: #8d8f94;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 380px;
+    height: 380px;
+}
+#inputEng {
+  font-family: helvetica;
+  font-size: 30pt;
+  max-width: 380px;
+  max-height: 380px;
+  height: 380px;
+  width: 380px;
+}
+p#outputGoesHere {
+  font-family: helvetica;
+  font-size: 30pt;
+  max-width: 380px;
+  max-height: 380px;
+}
+#header {
+  display:flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  flex-grow: 1;
+  margin-top: 40px;
+}
+#footer {
+  display: flex;
+  flex-flow: row;
+  flex-grow: 2;
+  justify-content: center;
+  align-items: center;
+  min-width: 100%;
+  min-height: 5vh;
+  background-color: #606B9B;
+}
+#username {
+    margin-bottom: 2px;
+    font-family: helvetica;
+    font-size: 25pt;
+    color: #ffffff;
+}
+#reviewButton {
+  margin-left: 40px;
+  position: absolute;
+  border-radius: 12px;
+  height: 60px;
+  border: none;
+  background-color: #606B9B;
+  font-family: helvetica;
+  font-size: 18pt;
+  color: white;
+  width: 20%;
+}
+#addButton {
+
+  margin-left: 40px;
+  position: absolute;
+  border-radius: 12px;
+  height: 60px;
+  border: none;
+  background-color: #606B9B;
+  font-family: helvetica;
+  font-size: 18pt;
+  color: white;
+  width: 20%;
+}
+#nextButton {
+
+    width: 15%;
+    height: 60px;
+    border-radius: 12px;
+    border: none;
+    background-color: #70C7A9;
+    font-family: helvetica;
+    font-size: 25pt;
+    color: white;
+}
+html, body {
+  overflow: hidden;
+}
+#titleDiv{
+    min-width: 100%;
+    display: flex;
+    justify-content: center;
+
+    width: 80%;
+}
+p#title {
+  font-family: 'Raleway', sans-serif;
+  font-size: 60pt;
+  font-weight: bolder;
+  color: #606B9B;
+}
+#headerButtonDiv {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 40px;
+
+}
+#saveButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 150px;
+  margin-bottom: 40px;
+  margin-top: 12px;
+  flex-grow: 1;
+}
+#actualSaveButton {
+  width: 15%;
+  height: 60px;
+  border-radius: 12px;
+  border: none;
+  background-color: #70C7A9;
+  font-family: helvetica;
+  font-size: 25pt;
+  color: white;
+}
+div.mainPage {
+  min-width: 0;
+  height: 900px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-grow: 4;
+}
+.mainPageTwo {
+  min-width: 0;
+  height: 900px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+div#pageContainer {
+  height: 100vh;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+/* don't get weird blue border when I type */
+textarea:focus {
+    outline: none;
+}
+textarea {
+    border: none;
+}
