@@ -1,6 +1,0 @@
-const sqlite3 = require("sqlite3").verbose(); 
-function dumpDB(){
-    db.all ( 'SELECT * FROM flashcards', dataCallback);
-    function dataCallback( err, data ) {console.log(data)}
-}
-dumpDB();
