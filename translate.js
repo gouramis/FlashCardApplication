@@ -1,15 +1,16 @@
+//Created by Cameron Fitzpatrick 2019
 const APIrequest = require('request');
 const http = require('http');
-const APIkey = "AIzaSyBtmGMsUOLVBJAE6tEZ3xvnH29vAYETnYk";  // ADD API KEY HERE
+const APIkey = "AIzaSyBtmGMsUOLVBJAE6tEZ3xvnH29vAYETnYk";
 const url = "https://translation.googleapis.com/language/translate/v2?key="+APIkey;
 let requestObject =
-    {
-	     "source": "en",
-	     "target": "ms",
-	     "q": [
-	          "example phrase"
-	     ]
-    }
+{
+     "source": "en",
+     "target": "ms",
+     "q": [
+	  "example phrase"
+     ]
+}
 function translateHandler(req, res, next) {
     let url1 = req.url;
     console.log(url1.english);
