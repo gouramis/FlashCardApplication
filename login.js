@@ -1,4 +1,4 @@
-
+//Created by Cameron Fitzpatrick 2019
 function loginAJAX() {
     url = 'auth/google';
     xhr = new XMLHttpRequest();
