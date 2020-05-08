@@ -1,8 +1,21 @@
+//Created by Cameron Fitzpatrick 2019
+//Modified 2020
+/* 
+   This is the express server code for the application.
+   This uses Google translate API for translation,
+   Google login API for user id's,
+   SQLite3 for the database,
+   and all database calls are singleton files.
+*/
+//use strict to prevent anything weird from happening:
 "use strict"
-// Globals
+//Globals
 let username = '';
+//using express:
 const express = require('express')
-const port = 52559 // you need to put your port number here
+//my port number for the linux server this is built to
+//run on:
+const port = 52559
 //middleware functions:
 const fs = require("fs");
 const passport = require('passport');
@@ -19,24 +32,17 @@ const dbFileName = "Flashcards.db";
 // makes the object that represents the database in our code
 //this is the interaction between the code and the database
 const db = new sqlite3.Database(dbFileName);
-
-
-
+//my client data from google api:
 const googleLoginData = {
     clientID: '774968755251-4q36uu2hvu6acjj4nnkh0fca1rhm3ate.apps.googleusercontent.com',
     clientSecret: 'z708RWqLLnANSHcwja468Gfo',
     callbackURL: 'http://server162.site:52559/auth/redirect'
 };
-
-
-
-
 // print the url of incoming HTTP request
 function printURL (req, res, next) {
     console.log(req.url);
     next();
 }
-
 // function to check whether user is logged when trying to access
 // personal data
 function isAuthenticated(req, res, next) {
@@ -46,39 +52,21 @@ function isAuthenticated(req, res, next) {
 	  next();
     } else {
 	    res.redirect('/login.html');
-      // send response telling Browser to go to login page
     }
 }
 
-
-// Some functions Passport calls, that we can use to specialize.
-// This is where we get to write our own code, not just boilerplate.
-// The callback "done" at the end of each one resumes Passport's
-// internal process.
-
-// function called during login, the second time passport.authenticate
-// is called (in /auth/redirect/),
-// once we actually have the profile data from Google.
+//function called during login, the second time passport.authenticate
+//is called (in /auth/redirect/),
+//once we actually have the profile data from Google.
 function gotProfile(accessToken, refreshToken, profile, done) {
-
-    // here is a good place to check if user is in DB,
-    // and to store him in DB if not already there.
-    // Second arg to "done" will be passed into serializeUser,
-    // should be key to get user out of database.
-/*
-    if(profile.id) {
-      let dbRowID = profile.id;
-    } else {
-      let dbRowID = 1;
-    }
-*/
+		//grab profile information for user:
     let dbRowID = String(profile.id);
     let fName = String(profile.name.givenName);
     let lName = String(profile.name.familyName);
+		//check if user is in db, if not place in there:
     const cmdStr = 'INSERT INTO Users(googleid, firstName, lastName) VALUES (?,?,?) ';
-    db.run( cmdStr , dbRowID, fName, lName, storeUserCallback);
-
-    //homemade error checking, error here has high probability of being user exists in table already:
+    db.run( cmdStr , dbRowID, fName, lName, storeUserCallback)
+    //error here has high probability of being user exists in table already:
     function storeUserCallback (err) {
         if (err) {console.log("account already in database, moving on");}
         else {console.log("inserted user into db");}
@@ -87,18 +75,15 @@ function gotProfile(accessToken, refreshToken, profile, done) {
     // some commands that may or may not be useful sometime:
     //'UPDATE Users SET seen = seen + 1 WHERE googleid = dbRowID'
     //UPDATE {Table} SET {Column} = {Column} + {Value} WHERE {Condition}
-
     done(null, profile.id);
 }
-
-// Part of Server's sesssion set-up.
-// The second operand of "done" becomes the input to deserializeUser
-// on every subsequent HTTP request with this session's cookie.
+//part of Server's sesssion set-up.
+//the second operand of "done" becomes the input to deserializeUser
+//on every subsequent HTTP request with this session's cookie.
 passport.serializeUser((dbRowID, done) => {
     console.log("SerializeUser. Input is",dbRowID);
     done(null, dbRowID);
 });
-
 // Called by passport.session pipeline stage on every HTTP request with
 // a current session cookie.
 // Where we should lookup user database info.
@@ -106,9 +91,6 @@ passport.serializeUser((dbRowID, done) => {
 // and can be used by subsequent middleware.
 passport.deserializeUser((dbRowID, done) => {
     console.log("deserializeUser. Input is:", dbRowID);
-    // here is a good place to look up user data in database using
-    // dbRowID. Put whatever you want into an object. It ends up
-    // as the property "user" of the "req" object.
     let stuff = 'SELECT * FROM Users WHERE googleid = ?';
     db.get(stuff, dbRowID, callBackFunSChION);
     function callBackFunSChION (err, rowData) {
@@ -122,12 +104,8 @@ passport.deserializeUser((dbRowID, done) => {
         username = rowData.firstName;
       }
     }
-
-
 });
-
-
-
+//some middleware functions:
 function translate (req,res,next) {
   translater.translateHandler(req,res,next);
 }
@@ -140,63 +118,41 @@ function fileNotFound(req, res) {
     res.status(404);
     res.send('Cannot find '+url);
 }
-// put together the server pipeline
+//put together the server pipeline
+//Below code was given from Google,
+//and modified by Cameron Fitzpatrick 2019
 const app = express();
-// Strategy configuration.
-// Tell passport we will be using login with Google, and
-// give it our data for registering us with Google.
-// The gotProfile callback is for the server's HTTPS request
-// to Google for the user's profile information.
-// It will get used much later in the pipeline.
+//tell passport we will be using login with Google
 passport.use( new GoogleStrategy(googleLoginData, gotProfile) );
-// pipeline stage that just echos url, for debugging
+//pipeline stage that just echos url, for debugging
 app.use('/', printURL);
-// Check validity of cookies at the beginning of pipeline
-// Will get cookies out of request, decrypt and check if
-// session is still going on.
+//Check validity of cookies at the beginning of pipeline
+//will get cookies out of request, decrypt and check if
+//session is still going on.
 app.use(cookieSession({
     maxAge: 6 * 60 * 60 * 1000, // Six hours in milliseconds
     // meaningless random string used by encryption
     keys: ['hanger waldo mercy dance']
 }));
-// Initializes request object for further handling by passport
+//Initializes request object for further handling by passport
 app.use(passport.initialize());
-// If there is a valid cookie, will call deserializeUser()
+//If there is a valid cookie, will call deserializeUser()
 app.use(passport.session());
-// Public static files
+/Public static files
 app.get('/*',express.static('public'));
-// next, handler for url that starts login with Google.
-// The app (in public/login.html) redirects to here (not an AJAX request!)
-// Kicks off login process by telling Browser to redirect to
-// Google. The object { scope: ['profile'] } says to ask Google
-// for their user profile information.
+//handler for url that starts login with Google.
 app.get('/auth/google',
 	passport.authenticate('google',{ scope: ['profile'] }) );
-// passport.authenticate sends off the 302 response
-// with fancy redirect URL containing request for profile, and
-// client ID string to identify this app.
-
-// Google redirects here after user successfully logs in
-// This route has three handler functions, one run after the other.
 app.get('/auth/redirect',
-	// for educational purposes
 	function (req, res, next) {
 	    console.log("at auth/redirect");
 	    next();
 	},
-	// This will issue Server's own HTTPS request to Google
-	// to access the user's profile information with the
-	// temporary key we got in the request.
 	passport.authenticate('google'),
-	// then it will run the "gotProfile" callback function,
-	// set up the cookie, call serialize, whose "done"
-	// will come back here to send back the response
-	// ...with a cookie in it for the Browser!
 	function (req, res) {
 	    console.log('redirecting')
 	    res.redirect('/user/bahasaReact.html');
 	});
-
 // static files in /user are only available after login
 app.get('/user/*',
 	isAuthenticated, // only pass on to following function if
@@ -204,7 +160,8 @@ app.get('/user/*',
 	// serving files that start with /user from here gets them from ./
 	express.static('.')
        );
-
+//above code is given from Google, and modified by Cameron Fitzpatrick 2019
+//more middleware functions:
 function getName (req,res,next) {
   name.getFirstName(req,res,next);
 }
@@ -217,14 +174,6 @@ function incSeen (req, res, next) {
 function incCorrect (req, res, next) {
   incrementCorrect.incrCorrect(req, res, next);
 }
-/*
-function translate (req,res,next) {
- translater.translateHandler(req,res,next);
-}
-function storeCard (req,res,next) {
- store.storeFlashCard(req, res,next);
-}
-*/
 // next, all queries (like translate or store or get...
 app.get('/', getName );
 app.get('/user/check', getCards);
