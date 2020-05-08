@@ -1,3 +1,12 @@
+//Created by Cameron Fitzpatrick 2019
+//Modified 2020
+/* 
+   This singleton file operation will 
+   store the flashcard in the database.
+   It finds the correct user with the name found
+   in the server file. This uses SQLite3
+   and JavaScript to make the db call.   
+*/
 const sqlite3 = require("sqlite3").verbose();
 const dbFileName = "Flashcards.db";
 // makes the object that represents the database in our code
